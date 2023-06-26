@@ -18,4 +18,18 @@
   </header>
 </template>
 
-<script setup></script>
+<script setup>
+import store from '../store/store';
+import { computed } from 'vue';
+import { supabase } from '../lib/supabaseClient';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const user = computed(() => store.state.user);
+
+const logout = async () => {
+  await supabase.auth.signOut();
+  router.push('/');
+}
+</script>

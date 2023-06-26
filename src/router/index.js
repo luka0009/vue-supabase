@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
+import { supabase } from "../lib/supabaseClient";
+import HomeView from "../views/HomeView.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Create from "../views/Create.vue";
@@ -9,7 +10,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: HomeView,
     meta: {
       title: "Home",
       auth: false,
@@ -54,7 +55,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 

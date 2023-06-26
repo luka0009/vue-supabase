@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-full font-Poppins box-border">
     <Navigation />
+    <RouterView />
   </div>
 </template>
 

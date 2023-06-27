@@ -136,7 +136,7 @@
                 v-model="item.cardioType"
               >
                 <option value="#">Select Type</option>
-                <option value="run">Runs</option>
+                <option value="run">Run</option>
                 <option value="walk">Walk</option>
               </select>
             </div>
@@ -203,6 +203,7 @@
 <script setup>
   import { ref } from "vue";
   import { v4 } from "uuid";
+  import { supabase } from "../lib/supabaseClient";
 
   const workoutName = ref("");
   const workoutType = ref("select-workout");
@@ -221,7 +222,7 @@
       });
     } else if (workoutType.value === "cardio") {
       exercises.value.push({
-        id: uuid(),
+        id: v4(),
         cardioType: "",
         distance: "",
         duration: "",
@@ -250,7 +251,37 @@
     addExercise();
   };
 
-  const createWorkout = () => {
-    console.log(exercises.value);
+  const createWorkout = async () => {
+    try {
+      const { data, error } = await supabase.from("workouts").insert([
+        {
+          workoutName: workoutName.value,
+          workoutType: workoutType.value,
+          exercises: exercises.value,
+        },
+      ]);
+
+      if (error) {
+        console.log(error);
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = null;
+        }, 5000);
+      } else {
+        statusMsg.value = `Workout added to the database`;
+        setTimeout(() => {
+          statusMsg.value = null;
+        }, 5000);
+        console.log('data', data);
+        workoutName.value = null;
+        workoutType.value = "select-workout";
+        exercises.value = [];
+      }
+    } catch (error) {
+      errorMsg.value = `Error: ${error.message}`;
+      setTimeout(() => {
+        errorMsg.value = null;
+      }, 5000);
+    }
   };
 </script>

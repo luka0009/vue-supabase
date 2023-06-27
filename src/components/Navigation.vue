@@ -5,7 +5,7 @@
     >
       <div class="flex items-center gap-x-4">
         <img class="w-14" src="../assets/dumbbell-light.png" alt="" />
-        <h1 class="text-lg">Active Tracker</h1>
+        <h1 class="text-lg">Fitness App</h1>
       </div>
       <ul class="flex flex-1 justify-end gap-x-3">
         <router-link class="cursor-pointer" :to="{ name: 'Home' }">Home</router-link>

@@ -202,6 +202,7 @@
 
 <script setup>
   import { ref } from "vue";
+  import { v4 } from "uuid";
 
   const workoutName = ref("");
   const workoutType = ref("select-workout");
@@ -209,5 +210,47 @@
   const statusMsg = ref(null);
   const errorMsg = ref(null);
 
-  const createWorkout = () => {};
+  const addExercise = () => {
+    if (workoutType.value === "strength") {
+      exercises.value.push({
+        id: v4(),
+        exercise: "",
+        sets: "",
+        reps: "",
+        weight: "",
+      });
+    } else if (workoutType.value === "cardio") {
+      exercises.value.push({
+        id: uuid(),
+        cardioType: "",
+        distance: "",
+        duration: "",
+        pace: "",
+      });
+    } else {
+      return;
+    }
+  };
+
+  const deleteExercise = (id) => {
+    if (exercises.value.length > 1) {
+      exercises.value = exercises.value.filter((exercise) => {
+        return exercise.id !== id;
+      });
+    } else {
+      errorMsg.value = "There are no exercises to delete";
+      setTimeout(() => {
+        errorMsg.value = null;
+      }, 5000);
+    }
+  };
+
+  const workoutChange = () => {
+    exercises.value = [];
+    addExercise();
+  };
+
+  const createWorkout = () => {
+    console.log(exercises.value);
+  };
 </script>

@@ -122,7 +122,7 @@
 						</div>
 						<div class="flex flex-1 flex-col">
 							<label for="weight" class="mb-1 text-sm text-at-light-green">
-								Weight (LB's)
+								Weight (KG)
 							</label>
 							<input
 								v-if="edit"
@@ -249,14 +249,16 @@
 <script setup>
 	import { ref, computed } from "vue";
 	import { supabase } from "../lib/supabaseClient";
-	import { useRoute } from "vue-router";
+	import { useRoute, useRouter } from "vue-router";
 	import store from "../store/store";
+	import { v4 } from "uuid";
 
 	const data = ref(null);
 	const dataLoaded = ref(false);
 	const errorMsg = ref(null);
 	const statusMsg = ref(null);
 	const route = useRoute();
+	const router = useRouter();
 	const user = computed(() => store.state.user);
 
 	const currentId = route.params.workoutId;
@@ -287,8 +289,91 @@
 
 	fetchWorkout();
 
-    const edit = ref(null);
-    const editMode = () => {
-        edit.value = !edit.value;
-    }
+	const deleteWorkout = async () => {
+		try {
+			const { error } = await supabase
+				.from("workouts")
+				.delete()
+				.eq("id", currentId);
+			if (error) {
+				throw new Error(error);
+			} else {
+				router.push("/");
+			}
+		} catch (error) {
+			errorMsg.value = `Error: ${error.message}`;
+			setTimeout(() => {
+				errorMsg.value = null;
+			}, 5000);
+		}
+	};
+
+	const addExercise = () => {
+		if (data.value.workoutType === "strength") {
+			data.value.exercises.push({
+				id: v4(),
+				exercise: "",
+				sets: "",
+				reps: "",
+				weight: "",
+			});
+		} else if (data.value.workoutType === "cardio") {
+			data.value.exercises.push({
+				id: v4(),
+				cardioType: "",
+				distance: "",
+				duration: "",
+				pace: "",
+			});
+		} else {
+			return;
+		}
+	};
+
+	const deleteExercise = (id) => {
+		if (data.value.exercises.length > 1) {
+			data.value.exercises = data.value.exercises.filter((exercise) => {
+				return exercise.id !== id;
+			});
+		} else {
+			errorMsg.value =
+				"You must have at least one exercise in each workout plan";
+			setTimeout(() => {
+				errorMsg.value = null;
+			}, 5000);
+		}
+	};
+
+	const edit = ref(null);
+	const editMode = () => {
+		edit.value = !edit.value;
+	};
+
+	const update = async () => {
+		try {
+			const { error } = await supabase
+				.from("workouts")
+				.update({
+					workoutName: data.value.workoutName,
+					exercises: data.value.exercises,
+				})
+				.eq("id", currentId)
+				.select();
+			if (error) {
+				throw new Error(error);
+			} else {
+				edit.value = false;
+				statusMsg.value = "Workout updated succesfully";
+				setTimeout(() => {
+					statusMsg.value = null;
+				}, 3000);
+			}
+		} catch (error) {
+            console.log(error);
+			errorMsg.value = `Error: ${error.message}`;
+			setTimeout(() => {
+				errorMsg.value = null;
+			}, 5000);
+		}
+	};
 </script>

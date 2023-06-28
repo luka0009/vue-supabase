@@ -3,7 +3,7 @@
 		<nav
 			class="container py-5 px-4 flex flex-col gap-4 items-center sm:flex-row"
 		>
-			<router-link :to="{ name: 'Home' }">
+			<router-link to="/">
 				<div class="flex items-center gap-x-4">
 					<img class="w-14" src="../assets/dumbbell-light.png" alt="" />
 					<h1 class="text-lg">Fitness App</h1>
